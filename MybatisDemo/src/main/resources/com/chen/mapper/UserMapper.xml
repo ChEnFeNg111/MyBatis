@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace="mapper的包名.mapper的文件名"  主要是防止sql名字冲突 -->
+<mapper namespace="com.chen.mapper.UserMapper">
+
+    <!-- id="SQL语句的唯一标识"
+         parameterType="sql语句需要的参数类型"
+    -->
+
+    <!-- 添加 -->
+    <!-- User(username,password) -->
+    <insert id="insert" parameterType="com.chen.entity.User">
+        insert into user (username, password) values (#{username},#{password})
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="delete" parameterType="string">
+        delete from user where username=#{str}
+    </delete>
+
+    <!-- 修改-->
+    <update id="update" parameterType="com.chen.entity.User">
+        update user set password=#{password} where username=#{username}
+    </update>
+
+    <!-- 查询 单个-->
+    <!-- resultType="返回值的类型"-->
+
+    <select id="selectOne" parameterType="string" resultType="com.chen.entity.User">
+        select username,password from user where username=#{str}
+    </select>
+
+    <!-- 查询 所有-->
+    <select id="selectAll" resultType="com.chen.entity.User">
+        select username,password from user
+    </select>
+
+
+</mapper>

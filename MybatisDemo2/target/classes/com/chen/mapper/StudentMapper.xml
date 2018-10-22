@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chen.mapper">
+
+    <!-- 获取自动增长列的值
+        参数类型 ： parameterType="com.chen.entity.Student"
+        主键列   ： keyColumn="id"(数据库中表的主键列)
+        指明要将获取到的主键值赋值给哪一个：keyProperty="id"  （id 是 Student 的属性id）
+        是否要使用数据库生成的主键： useGeneratedKeys="true"
+    -->
+    <insert id="insert" parameterType="com.chen.entity.Student" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into student values(null,#{name},#{age});
+    </insert>
+
+    <!-- 动态sql： foreach 标签
+        parameterType="list"  java.util.List <==> 简写 list
+        forEach : 遍历list集合
+        collection="list": 要遍历的集合
+        item="i"       临时变量
+        open="("       循环之前的符号 "("
+        separator=","  每个元素之间以 "," 分割
+        close=")"      循环之后的符号 ")"
+    -->
+    <delete id="delete" parameterType="list">
+        delete from Student where id in
+        <foreach collection="list" item="i" open="(" separator="," close=")">
+            #{i}
+        </foreach>
+    </delete>
+
+    <!-- 动态sql： if 标签 set 标签： 会自动添加 set 并且会把多余的 “,” 去掉，保证sql语句的正确性-->
+    <update id="update" parameterType="com.chen.entity.Student" >
+        update student
+        <set>
+            <if test="name!=null">
+                name=#{name},
+            </if>
+            <if test="age!=null">
+                age=#{age},
+            </if>
+        </set>
+
+        <where>
+            id=#{id}
+        </where>
+    </update>
+
+    <!--动态sql： 条件查询
+        if标签，where标签，
+        parameterType="map" 参数类型 java.util.Map <==> 简写map
+        resultType="com.chen.entity.Student" 返回值类型
+        where: 可以自动拼接字符串  并将多余的 and 去掉
+    -->
+    <select id="selectByCondition" parameterType="map" resultType="com.chen.entity.Student">
+        select * from student
+        <where>
+            <if test="name!=null">
+                and name like #{name}
+            </if>
+            <if test="minAge!=null and maxAge!=null">
+                and age between  #{minAge} and #{maxAge}
+            </if>
+        </where>
+    </select>
+
+    <!-- 分页查询
+          物理分页：select * from student limit start,size;
+              优点：使用sql直接进行分页
+              缺点：不通用，数据库不同的sql语句不同
+          逻辑分页：select * from student 先把数据查询出来，再通过JDBC代码实现分页
+              优点： 通用
+              缺点： 效率低，值设和于数据很少的情况
+    -->
+
+    <!--物理分页-->
+    <select id="selectPage" parameterType="map" resultType="com.chen.entity.Student">
+        select  * from student limit #{start},#{size}
+    </select>
+
+    <!--逻辑分页-->
+    <select id="selectLogical" resultType="com.chen.entity.Student">
+        select * from student
+    </select>
+    
+    <!--为了解决表与实体类不匹配的情况-->
+
+    <!-- 取一个 列别名-->
+    <select id="selectName" parameterType="int" resultType="com.chen.entity.Teacher">
+        select id ,first_name firstName,last_name lastName from teacher where id=#{id}
+    </select>
+
+    <!-- 使用 resultMap 代替 resultType 完成映射-->
+    <select id="selectMap" parameterType="int" resultMap="ma">
+        select id,first_name,last_name from teacher where id=#{id}
+
+    </select>
+
+    <resultMap id="ma" type="com.chen.entity.Teacher">
+        <!--
+           id： 对应主键
+           column ：对应数据库中的列名
+           property：对应实体类中的属性
+        -->
+        <id column="id" property="id"></id>
+        <result column="first_name" property="firstName"></result>
+        <result column="last_name" property="lastName"></result>
+    </resultMap>
+
+
+    <!-- 连接查询映射到两个实体类上-->
+    <select id="innerJoin" parameterType="int" resultMap="inner">
+        select p.id,p.name,p.price ,c.id cid,c.name cname from product p inner join category c on p.categoryId = c.id where p.id=#{id}
+    </select>
+
+    <resultMap id="inner" type="com.chen.entity.Product">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="price" property="price"></result>
+
+        <!-- 关系： property="关系属性名" JavaType: 实体类型-->
+        <association property="category" javaType="com.chen.entity.Category">
+            <id column="cid" property="id"></id>
+            <result column="cname" property="name"></result>
+        </association>
+    </resultMap>
+
+
+</mapper>

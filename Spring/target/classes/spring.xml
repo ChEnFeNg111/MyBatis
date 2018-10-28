@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- xmlns 是xml的命名空间
+    要引入新的 context命名空间
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 启动注解 -->
+    <context:annotation-config/>
+
+    <!--受spring容器管理类, 使用<bean>标签管理
+            id="唯一标识"
+    -->
+    <bean id="userDao" class="com.chen.dao.UserDao">
+
+    </bean>
+
+    <bean id="userService" class="com.chen.service.UserService">
+        <!-- set注入-->
+       <!-- <property name="userDao" ref="userDao"/>-->
+
+        <!-- 构造注入 -->
+        <!--<constructor-arg index="0" ref="userDao"/>-->
+    </bean>
+</beans>

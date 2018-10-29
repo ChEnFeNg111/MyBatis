@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 映射文件的包名必须与 接口mapper 的包名保持一致-->
+<mapper namespace="com.chen.mapper.ProductMapper">
+
+    <!-- id名必须和ProductMapper接口中的方法名保持一致-->
+    <delete id="deleteByIds" parameterType="list" >
+        delete from product where id in
+        <foreach collection="list" item="i" open="("  separator="," close=")">
+            #{i}
+        </foreach>
+    </delete>
+
+</mapper>

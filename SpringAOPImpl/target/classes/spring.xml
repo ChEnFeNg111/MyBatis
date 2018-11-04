@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 引入 aop 的命名空间 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 启动 aop相关的注解  能够帮我们生成底层的代理对象 Proxy -->
+    <aop:aspectj-autoproxy/>
+
+    <!-- 目标类 -->
+    <bean id="orderServiceTarget" class="com.chen.spring.service.OrderServiceTarget"></bean>
+
+    <!-- 通知类 -->
+    <bean id="transcationAdvice" class="com.chen.spring.advice.TranscationAdvice"></bean>
+    <bean id="beforeAdvice" class="com.chen.spring.advice.BeforeAdvice"></bean>
+    <bean id="afterAdvice" class="com.chen.spring.advice.AfterAdvice"></bean>
+    <bean id="afterReturningAdvice" class="com.chen.spring.advice.AfterReturningAdvice"></bean>
+    <bean id="afterThrowingAdvice" class="com.chen.spring.advice.AfterThrowingAdvice"></bean>
+
+    <bean id="countTimeAdvice" class="com.chen.spring.advice.CountTimeAdvice"></bean>
+
+
+
+</beans>

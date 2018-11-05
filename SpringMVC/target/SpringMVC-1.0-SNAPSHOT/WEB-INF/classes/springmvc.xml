@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- 引入 mvc 命名空间（xmlns:mvc）-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop.xsd
+ http://www.springframework.org/schema/mvc
+ http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 解决无法直接访问静态资源（图片，html，css,js等）
+            原因: DispatcherServlet的路径是/ 跟tomcat中处理静态资源（图片）的Servlet路径冲突了
+		          所以所有静态资源（图片）的请求被DispatcherServlet所处理，把图片的路径当做了控制器路径
+	        解决办法：
+		          在spring配置文件中加入：`<mvc:default-servlet-handler/>`
+     -->
+    <mvc:default-servlet-handler/>
+
+    <!-- 启动 mvc 相关注解-->
+    <mvc:annotation-driven/>
+
+    <!-- 将 控制类 交给 spring容器 管理-->
+    <bean id="controllerDemo" class="com.chen.controller.ControllerDemo"></bean>
+
+    <!-- 视图解析器：处理控制类返回的视图名，判断该视图是哪种视图
+         解析为 jsp视图技术:
+            根据 控制中的方法返回的 视图名 进行 前缀(/:指的是从当前目录(webapp)下访问) 和 后缀(后缀名".jsp")的拼接
+            "/" + "视图名" + ".jsp" ==>  /视图名.jsp :相当于生成了访问jsp页面的路径,再进行请求转发 request.getRequestDispatcher("/hello.jsp").forward(request,response);
+                 例:"/" + "hello" + ".jsp" ==> /hello.jsp
+    -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+</beans>

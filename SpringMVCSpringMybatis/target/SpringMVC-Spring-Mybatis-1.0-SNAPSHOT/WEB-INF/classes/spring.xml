@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- 引入 mvc 命名空间（xmlns:mvc）-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop.xsd
+ http://www.springframework.org/schema/mvc
+ http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 启用注解功能-->
+    <context:annotation-config/>
+    <!-- 启用mvc注解 -->
+    <mvc:annotation-driven/>
+    <!-- 处理静态资源-->
+    <mvc:default-servlet-handler/>
+
+    <!-- 视图解析器-->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <!-- 读取properties的内容-->
+    <context:property-placeholder location="classpath:jdbc.properties" />
+
+    <!-- 数据库连接池： druid-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${drivername}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${password}"/>
+        <property name="maxActive" value="${max}"/>
+        <property name="minIdle" value="${min}"/>
+    </bean>
+
+    <!-- 获取SqlSessionFactory 工厂-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 扫描 mapper接口,把mapper接口自动配置成 spring 中的 <bean>-->
+    <bean id="scannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.chen.mapper"/>
+    </bean>
+
+    <!-- 将ProductService交给 spring容器管理 -->
+    <bean id="productServie" class="com.chen.service.ProductServie"></bean>
+
+    <!-- 将 ProductController 交给 spring容器管理-->
+    <bean id="productController" class="com.chen.controller.ProductController"></bean>
+
+
+
+
+</beans>

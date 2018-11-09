@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 引入 aop 的命名空间 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!-- 启动aop 相关的注解，能自动生成代理类 Proxy-->
+    <aop:aspectj-autoproxy/>
+
+    <!-- 将 目标类 交给 spring容器管理-->
+    <bean id="serviceTarget" class="com.chen.service.UserServiceTarget"></bean>
+
+    <!-- 将 通知类交给 spring容器管理-->
+    <bean id="countTimeAdvice" class="com.chen.advice.CountTimeAdvice"></bean>
+</beans>

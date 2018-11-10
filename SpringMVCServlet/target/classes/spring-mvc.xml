@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop.xsd
+ http://www.springframework.org/schema/mvc
+ http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 启动 spring相关的注解-->
+    <context:annotation-config/>
+    <!--启动springmvc相关的注解-->
+    <mvc:annotation-driven/>
+    <!-- 处理静态资源-->
+    <mvc:default-servlet-handler/>
+
+    <!-- 视图解析器-->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <!-- 扫描器： 将 Controller 包中使用了 @Controller 注解的类交给spring容器管理（控制反转）自动生成 bean-->
+    <context:component-scan base-package="com.chen.controller"/>
+
+    <!-- 配合文件上传而使用的 文件解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="100000"/>
+    </bean>
+
+</beans>

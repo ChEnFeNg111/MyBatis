@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop.xsd
+ http://www.springframework.org/schema/mvc
+ http://www.springframework.org/schema/mvc/spring-mvc.xsd
+ http://www.springframework.org/schema/tx
+ http://www.springframework.org/schema/tx/spring-tx.xsd
+ http://www.springframework.org/schema/cache
+ http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <!-- 1) 读取properties -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 2) 配置数据源(连接池) -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="${jdbc.max}"/>
+        <property name="minIdle" value="${jdbc.min}"/>
+    </bean>
+    <!-- 3) SqlSessionFactory -->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- 4) 扫描mapper接口-->
+    <bean id="scannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.chen.mapper"/>
+    </bean>
+    <!-- 5) 事务的管理 (事务管理器, 启用事务注解) -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven/>
+    <!-- 6) 扫描service类 -->
+    <!--<bean class="com.westos.service.UserService"></bean>-->
+
+    <!-- 扫描组件，会扫描加了@Controller, @Service, @Repository, @Component, 把加了这几个注解的类交给spring容器管理 -->
+    <context:component-scan base-package="com.chen.service"/>
+
+    <!-- 7) 启用mvc的注解 -->
+    <mvc:annotation-driven/>
+    <!-- 8) 扫描控制器类 -->
+    <!--<bean class="com.westos.controller.UserController"></bean>-->
+    <context:component-scan base-package="com.chen.controller"/>
+
+    <!-- 9) 视图解析器 -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <!-- 10) 文件上传解析器 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+    <!-- 11) 静态资源处理器 -->
+    <mvc:default-servlet-handler/>
+    <!-- 12) 启用aop注解，自动代理-->
+    <aop:aspectj-autoproxy/>
+    <!-- 13) 通知类 -->
+
+    <!-- 14) 启用autowird等注解 -->
+    <context:annotation-config/>
+
+    <!-- 15) 缓存-->
+    <!-- 缓存的管理器 -->
+    <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager">
+        <!-- 管理缓存区域 -->
+        <property name="cacheNames">
+            <list>
+                <value>user</value>
+                <value>order</value>
+                <value>product</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 启用缓存相关的注解及支持
+        @Cacheable
+        @CacheEvict
+        @CachePut
+    -->
+    <cache:annotation-driven/>
+
+</beans>

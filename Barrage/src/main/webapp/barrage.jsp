@@ -1,152 +1,298 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: 陈峰
-  Date: 2018/11/13
-  Time: 19:24
-  To change this template use File | Settings | File Templates.
---%>
+
+<!-- 需求分析
+用户点击发送按钮 把input的内容展示到box里面
+1.元素 .con .send-btn .box span（创建）
+2.事件：点击事件 键盘事件
+3.行为
+1.点击.send-btn获取.con的内容
+    (1)规范发送信息
+    (2)禁止空及全空格
+    (3)存储value值
+2.根据内容动态生成span标签
+    (1)创建节点document.createElement
+    (2)改变节点内容innerHTML
+    (3)节点 生成初始化位置等
+    (4)标签添加到oBox appendChild
+3.message运动
+    (1)改变元素的left值
+    (2)定时器改变 setInterval
+    (3)this代表当前弹幕
+    (4)弹幕left = 当前left-1
+4.随机函数
+Math.random 0-1 包括0但不包括1
+    (1)top
+    (2)color
+    (3)fontsize
+    (4)textShadow
+    (5)timing运动曲线
+        linear
+        ease-out
+5.业务完善
+    (1)过去的删除掉
+         停止计时器
+         删除自身
+         终止函数
+    (2)完善回车输入
+        在oCon上回车 发送弹幕
+-->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Title</title>
-
-    <script>
-        function sendRequest() {
-
-            // 创建 XMLHttpRequest
-            var xhr = new XMLHttpRequest();
-
-            // 调用即时处理响应
-            xhr.onload = function () {
-
-                //
-                var map = JSON.parse(xhr.responseText);
-
-                // 遍历集合
-                for (var key in map){
-                    var word = map[key];
-
-                    var span = document.createElement('span');
-
-                    var top = parseInt(Math.random() * 500) - 20;
-
-                    var color1 = parseInt(Math.random() * 256);
-
-                    var color2 = parseInt(Math.random() * 256);
-
-                    var color3 = parseInt(Math.random() * 256);
-
-                    var color = "rgb(" + color1 + "," + color2 + "," + color3 + ")";
-
-                    top = top < 0 ? 0 : top;
-
-                    span.style.position = 'absolute' ;
-
-
-                    span.style.top = top + "px";
-
-                    span.style.color = color;
-
-                    span.style.left = '500px';
-
-                    span.style.whiteSpace = 'nowrap';
-
-                    var nub = (Math.random() * 10) + 1;
-
-                    span.setAttribute('speed', nub);
-
-                    span.speed = nub;
-
-                    span.innerHTML = word;
-
-                    document.getElementById("v").appendChild(span);
-
-                    document.getElementById("barrage").value = "";
-                }
-
-            }
-
-            var barrage = document.getElementById("barrage");
-            //var video = document.getElementById("v");
-
-            //获取发送的弹幕和时间
-            var text = barrage.value;
-
-            // 发送请求
-            xhr.open("get","/barrage?text="+text,true);
-            xhr.send();
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Js原生弹幕</title>
+    <link rel="stylesheet" href="">
+    <style type="text/css" media="screen">
+        * {
+            margin: 0px;
+            padding: 0px
         }
 
-        setInterval(move, 200);
-
-        function move() {
-
-            var spanArray = document.getElementById("v").children;
-
-            for (var i = 0; i < spanArray.length; i++) {
-
-                    spanArray[i].style.left =
-
-                        parseInt(spanArray[i].style.left) - spanArray[i].speed + 'px';
-
-            }
-
+        html, body {
+            height: 100%
         }
 
-
-
-
-    </script>
-
-    <script langugae="javascript">
-        var timer;
-        var btn = document.getElementById('btn');
-        btn.onclick = function() { addBarrage();}
-        document.onkeydown = function(evt) {var event = evt || window.event;if (event.keyCode == 13) {addBarrage();}}
-        var colors = ['#2C3E50', '#FF0000', '#1E87F0', '#7AC84B', '#FF7F00', '#9B39F4', '#FF69B4'];//弹幕颜色库
-        function addBarrage() {
-            clearInterval(timer);
-            var text = document.getElementById('text').value;
-            document.getElementById('text').value = "";
-            var index = parseInt(Math.random() * colors.length); //随机弹幕颜色
-            var screenW = window.innerWidth;
-            var screenH = dm.offsetHeight;
-            var max = Math.floor(screenH / 40);
-            var height = 10 + 40 * (parseInt(Math.random() * (max + 1)) - 1);
-            var span = document.createElement('span');
-            span.style.left = screenW + 'px';
-            span.style.top = height + 'px';
-            span.style.color = colors[index];
-            span.innerHTML = text;
-            var dmDom = document.getElementById('dm');
-            dmDom.appendChild(span);
-            timer = setInterval(move, 10);
+        body {
+            overflow: hidden;
+            background-color: #FFF;
+            text-align: center;
         }
-        function move() {
-            var arr=[];
-            var oSpan=document.getElementsByTagName('span');
-            for(var i=0;i<oSpan.length;i++){
-                arr.push(oSpan[i].offsetLeft);
-                arr[i] -= 2;
-                oSpan[i].style.left = arr[i]+'px';
-                if(arr[i]<-oSpan[i].offsetWidth){
-                    var dmDom=document.getElementById('dm');
-                    dmDom.removeChild(dmDom.childNodes[0]);
-                }
-            }
+
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;, align-items: center;
         }
-    </script>
+
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wrap {
+            overflow: hidden;
+            width: 70%;
+            height: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: transparent;
+            box-shadow: 0 0 9px #222;
+            border-radius: 20px;
+        }
+
+        .wrap .box {
+            position: relative;
+            width: 100%;
+            height: 90%;
+            background-color: #000000;
+            border-radius: 10px
+        }
+
+        .wrap .box span {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            display: block;
+            padding: 10px;
+            color: #336688
+        }
+
+        .wrap .send {
+            display: flex;
+            width: 100%;
+            height: 10%;
+            background-color: #000000;
+            border-radius: 8px
+        }
+
+        .wrap .send input {
+            width: 40%;
+            height: 60%;
+            border: 0;
+            outline: 0;
+            border-radius: 5px 0px 0px 5px;
+            box-shadow: 0px 0px 5px #d9d9d9;
+            text-indent: 1em
+        }
+
+        .wrap .send .send-btn {
+            width: 100px;
+            height: 60%;
+            background-color: #fe943b;
+            color: #FFF;
+            text-align: center;
+            border-radius: 0px 5px 5px 0px;
+            line-height: 30px;
+            cursor: pointer;
+        }
+
+        .wrap .send .send-btn :hover {
+            background-color: #4cacdc
+        }
+
+        .send-btn1{
+            width: 100px;
+            height: 60%;
+            background-color: #fe943b;
+            color: #FFF;
+            text-align: center;
+            border-radius: 0px 5px 5px 0px;
+            line-height: 30px;
+            cursor: pointer;
+        }
+
+        .send-btn1:hover{
+            background-color: #4cacdc
+        }
+
+    </style>
 </head>
 <body>
+    <div class="wrap flex-column">
+        <div class="box">
+            <video src="vedio/tomcatcluster.mp4" width="100%" height="100%" controls  autoplay></video>
+        </div>
+        <div class="send flex-row">
+            <div class="send-btn1">开启弹幕</div>
+            <input type="text" class="con" placeholder="弹幕发送[]~(^v^)~*">
+            <div class="send-btn">发送</div>
+        </div>
+    </div>
 
-            <video src="vedio/tomcatcluster.mp4" controls width="500" id="v">
+<script src="js/jquery-3.2.1.min.js" type="text/javascript"></script>
+<script>
 
-            </video>
 
-        <hr>
-        <input type="text" name="barrage" id="barrage">
-        <input type="button"  value="发送弹幕" onclick="sendRequest()">
-        <div style="width:100%; height: 100px; border: 1px solid black;" id="div1"> </div>
+
+    //1.获取元素
+    var oBox = document.querySelector('.box');   //获取.box元素
+    var oCon = document.querySelector('.con');   //获取input框
+    var oBtn = document.querySelector('.send-btn');   //获取发送按钮
+    var oBtn1 = document.querySelector('.send-btn1');   //获取开启弹幕按钮
+
+    var cW = oBox.offsetWidth;   //获取box的宽度
+    var cH = oBox.offsetHeight;   //获取box的高度
+
+    oBtn.onclick = send;   //点击发送
+    oBtn1.onclick = sendRequest; // 开启弹幕
+
+    oCon.onkeydown = function (e) {
+        e = e || window.event;
+        if (e.keyCode === 13) {
+            //回车键
+            send();
+        }
+    };
+
+
+
+    function send() {
+
+
+        //获取oCon的内容
+        if (oCon.value.length <= 0 || (/^\s+$/).test(oCon.value)) {
+            alert('请输入弹幕');
+            return false;
+        }
+
+        sendRequest();
+
+    }
+
+    function sendRequest() {
+
+        // 创建 XMLHttpRequest
+        var xhr = new XMLHttpRequest();
+
+        xhr.onload = function () {
+
+            var list = JSON.parse(xhr.responseText);
+
+            for (var i = 0; i < list.length; i++) {
+                var message = list[i].text;
+
+                console.log("返回的："+message);
+                //生成标签
+                createEle(message);   //执行节点创建模块
+                oCon.value = '';   //收尾工作清空输入框
+            }
+        }
+
+        xhr.open("get","/barrage?text="+oCon.value,true);
+        xhr.send();
+    }
+    function createEle(txt) {
+        //动态生成span标签
+        var oMessage = document.createElement('span');   //创建标签
+        oMessage.innerHTML = txt;   //接收参数txt并且生成替换内容
+        oMessage.style.left = cW + 'px';  //初始化生成位置x
+        oBox.appendChild(oMessage);   //把标签塞到oBox里面
+        roll.call(oMessage, {
+            //call改变函数内部this的指向
+            timing: ['linear', 'ease-out'][~~(Math.random() * 2)],
+            color: '#' + (~~(Math.random() * (1 << 24))).toString(16),
+            top: random(0, cH),
+            fontSize: random(16, 32)
+        });
+    }
+    function roll(opt) {
+        //弹幕滚动
+        //如果对象中不存在timing 初始化
+        opt.timing = opt.timing || 'linear';
+        opt.color = opt.color || '#fff';
+        opt.top = opt.top || 0;
+        opt.fontSize = opt.fontSize || 16;
+        this._left = parseInt(this.offsetLeft);   //获取当前left的值
+        this.style.color = opt.color;   //初始化颜色
+        this.style.top = opt.top + 'px';
+        this.style.fontSize = opt.fontSize + 'px';
+        this.timer = setInterval(function () {
+            if (this._left <= 100) {
+                clearInterval(this.timer);   //终止定时器
+                this.parentNode.removeChild(this);
+                return;   //终止函数
+            }
+            switch (opt.timing) {
+                case 'linear':   //如果匀速
+                    this._left += -2;
+                    break;
+                case 'ease-out':   //
+                    this._left += (0 - this._left) * .01;
+                    break;
+            }
+            this.style.left = this._left + 'px';
+        }.bind(this), 1000 / 60);
+    }
+    function random(start, end) {
+        //随机数封装
+        return start + ~~(Math.random() * (end - start));
+    }
+    var aLi = document.querySelectorAll('li');   //10
+
+    function forEach(ele, cb) {
+        for (var i = 0, len = aLi.length; i < len; i++) {
+            cb && cb(ele[i], i);
+        }
+    }
+    forEach(aLi, function (ele, i) {
+        ele.style.left = i * 100 + 'px';
+    });
+
+    //产生闭包
+    var obj = {
+        num: 1,
+        add: function () {
+            this.num++;   //obj.num = 2;
+            (function () {
+                console.log(this.num);
+            })
+        }
+    };
+    obj.add();  //window
+</script>
 </body>
-
 </html>
